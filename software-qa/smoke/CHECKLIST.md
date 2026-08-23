@@ -85,5 +85,5 @@ Format for each case:
 - Steps:
   1. Request https://pikachudratini.github.io/prsut-movement-map/
 - Expected:
-  - marker: 20260823-1408
+  - marker: 20260823-1412
 - Automate: curl

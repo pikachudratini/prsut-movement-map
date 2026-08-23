@@ -34,6 +34,7 @@ function show(name) {
   });
   $("fabBack").hidden = name === "welcome";
   $("fabBack").classList.toggle("is-hidden", name === "welcome");
+  if (name !== "welcome") $("installBanner").classList.remove("show");
   paintDots(name);
 }
 function paintDots(name) {

@@ -1,4 +1,4 @@
-const BUILD = "20260823-1408";
+const BUILD = "20260823-1412";
 const BOOK = "https://www.prsutfitness.com/get-started";
 const FIRST_DAY = "https://luckyduck.cc/prsut-first-day/";
 const PHONE = "402-630-3608";
