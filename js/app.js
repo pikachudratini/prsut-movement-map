@@ -3,7 +3,6 @@ import { BUILD, BOOK, FIRST_DAY, PHONE, MOVES, SAMPLE, LM, vis, analyze } from "
 
 const $ = (id) => document.getElementById(id);
 const panels = ["welcome", "details", "camera", "report"];
-let step = 0;
 let moveIndex = 0;
 let landmarker = null;
 let stream = null;
@@ -11,6 +10,10 @@ let raf = 0;
 let lastVideoTime = -1;
 let hold = 0;
 let usingDemo = false;
+let lastPose = null;
+let poseDelegate = "GPU";
+let rebuildCpu = false;
+let rebuilding = false;
 const captures = {};
 const historyStack = [];
 
@@ -47,7 +50,7 @@ window.addEventListener("popstate", () => {
   if (historyStack.length > 1) {
     historyStack.pop();
     const prev = historyStack[historyStack.length - 1];
-    if (prev === "camera") stopLoop();
+    if (prev !== "camera") stopLoop();
     show(prev);
   } else {
     show("welcome");
@@ -59,9 +62,10 @@ $("goCamera").onclick = async () => {
   if (!$("consent").checked) { toast("Check the camera box first."); return; }
   if (!$("phone").value.trim()) { toast("Phone helps us hold your intro."); return; }
   hap();
+  usingDemo = false;
+  moveIndex = 0;
   pushHist("camera");
   show("camera");
-  moveIndex = 0;
   await startCamera();
 };
 $("useDemo").onclick = () => {
@@ -82,26 +86,39 @@ $("fabBack").onclick = () => history.back();
 $("name").addEventListener("input", syncName);
 function syncName() { $("hello").textContent = $("name").value.trim() || "friend"; }
 
+async function createLandmarker(delegate) {
+  const files = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+  );
+  return PoseLandmarker.createFromOptions(files, {
+    baseOptions: {
+      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+      delegate
+    },
+    runningMode: "VIDEO",
+    numPoses: 1,
+    minPoseDetectionConfidence: 0.45,
+    minPosePresenceConfidence: 0.45,
+    minTrackingConfidence: 0.45
+  });
+}
+
+async function ensureLandmarker() {
+  if (landmarker) return;
+  try {
+    landmarker = await createLandmarker("GPU");
+    poseDelegate = "GPU";
+  } catch {
+    landmarker = await createLandmarker("CPU");
+    poseDelegate = "CPU";
+  }
+}
+
 async function startCamera() {
   $("camStatus").textContent = "Starting camera…";
   setMoveCopy();
   try {
-    if (!landmarker) {
-      const files = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
-      );
-      landmarker = await PoseLandmarker.createFromOptions(files, {
-        baseOptions: {
-          modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
-          delegate: "GPU"
-        },
-        runningMode: "VIDEO",
-        numPoses: 1,
-        minPoseDetectionConfidence: 0.45,
-        minPosePresenceConfidence: 0.45,
-        minTrackingConfidence: 0.45
-      });
-    }
+    await ensureLandmarker();
     stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: "user", width: { ideal: 720 }, height: { ideal: 960 } },
       audio: false
@@ -112,15 +129,17 @@ async function startCamera() {
     $("camStatus").textContent = "Camera on. Nothing leaves this phone.";
     loop();
   } catch (err) {
-    $("camStatus").textContent = "Camera blocked. Use the demo walkthrough, or allow the camera and try again.";
-    toast("Camera not available.");
+    $("camStatus").textContent = "Camera blocked. Use Demo walkthrough, or allow the camera and tap Continue again.";
+    toast("Camera not available. Demo walkthrough still works.");
   }
 }
 
 function stopLoop() {
   cancelAnimationFrame(raf);
+  raf = 0;
   if (stream) stream.getTracks().forEach((t) => t.stop());
   stream = null;
+  lastPose = null;
 }
 
 function loop() {
@@ -128,17 +147,36 @@ function loop() {
   const canvas = $("overlay");
   const ctx = canvas.getContext("2d");
   const tick = () => {
-    if (video.readyState >= 2 && landmarker) {
+    if (rebuildCpu && !rebuilding) {
+      rebuilding = true;
+      createLandmarker("CPU").then((lm) => {
+        landmarker = lm;
+        poseDelegate = "CPU";
+        rebuildCpu = false;
+        rebuilding = false;
+        $("camStatus").textContent = "Camera on. Nothing leaves this phone.";
+      }).catch(() => {
+        rebuilding = false;
+        $("camStatus").textContent = "Pose view failed. Use a stand-in or Demo walkthrough.";
+      });
+    }
+    if (video.readyState >= 2 && landmarker && !rebuilding) {
       if (canvas.width !== video.videoWidth) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
       }
       if (video.currentTime !== lastVideoTime) {
         lastVideoTime = video.currentTime;
-        const res = landmarker.detectForVideo(video, performance.now());
+        let res = null;
+        try {
+          res = landmarker.detectForVideo(video, performance.now());
+        } catch {
+          if (poseDelegate !== "CPU") rebuildCpu = true;
+        }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const pose = res.landmarks?.[0];
+        const pose = res?.landmarks?.[0];
         if (pose) {
+          lastPose = pose;
           drawPose(ctx, pose, canvas.width, canvas.height);
           autoHold(pose);
         } else {
@@ -201,7 +239,10 @@ function snapshot(pose) {
   const shot = document.createElement("canvas");
   shot.width = video.videoWidth || 360;
   shot.height = video.videoHeight || 480;
-  shot.getContext("2d").drawImage(video, 0, 0, shot.width, shot.height);
+  const sctx = shot.getContext("2d");
+  sctx.translate(shot.width, 0);
+  sctx.scale(-1, 1);
+  sctx.drawImage(video, 0, 0, shot.width, shot.height);
   captures[MOVES[moveIndex].id] = {
     landmarks: pose.map((p) => ({ x: p.x, y: p.y, visibility: p.visibility ?? 1 })),
     shot: shot.toDataURL("image/jpeg", 0.7)
@@ -211,11 +252,19 @@ function snapshot(pose) {
 
 function manualCapture() {
   if (usingDemo) return skipWithSample();
-  // take last drawn pose if any via a quick detect
   const video = $("cam");
-  if (!landmarker || video.readyState < 2) { toast("Camera not ready."); return; }
-  const res = landmarker.detectForVideo(video, performance.now());
-  const pose = res.landmarks?.[0];
+  if (!landmarker || video.readyState < 2) {
+    if (lastPose) { snapshot(lastPose); return; }
+    toast("Camera not ready.");
+    return;
+  }
+  let pose = lastPose;
+  try {
+    const res = landmarker.detectForVideo(video, performance.now());
+    pose = res.landmarks?.[0] || lastPose;
+  } catch {
+    if (poseDelegate !== "CPU") rebuildCpu = true;
+  }
   if (!pose) { toast("I cannot see a person yet."); return; }
   snapshot(pose);
 }
@@ -230,6 +279,7 @@ function skipWithSample() {
 function nextMove() {
   moveIndex += 1;
   hold = 0;
+  lastPose = null;
   $("holdFill").style.width = "0%";
   if (moveIndex >= MOVES.length) {
     stopLoop();
@@ -276,7 +326,7 @@ function finishReport() {
     report,
     when: new Date().toISOString()
   };
-  localStorage.setItem("prsut-movement-last", JSON.stringify(blob));
+  try { localStorage.setItem("prsut-movement-last", JSON.stringify(blob)); } catch {}
 }
 
 function placeholder(label) {

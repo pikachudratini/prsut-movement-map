@@ -96,7 +96,7 @@ select {
 }
 .btn.secondary { background: #fff; color: var(--ink); border: 1px solid #b7b0a4; }
 .stage { position: relative; width: 100%; aspect-ratio: 3/4; background: #111; border-radius: 0.75rem; overflow: hidden; }
-.stage video, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.stage video, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
 .stage canvas { pointer-events: none; }
 .holdbar { height: 6px; background: #e6dfd4; border-radius: 99px; overflow: hidden; margin: 0.55rem 0 0.2rem; }
 .holdbar i { display: block; height: 100%; width: 0; background: var(--teal); }
