@@ -1,0 +1,7 @@
+- Hospitality over spectacle. No AI scoreboard.
+- No medical claims. No injury prevention promise.
+- Camera only with consent. No upload of video.
+- All pose math stays in the browser.
+- Training for life, not the Games.
+- Compact buttons. Dots not Step X of Y. Thumb Back. Light lock.
+- Tyler and member facing copy has no agent or mentor names.

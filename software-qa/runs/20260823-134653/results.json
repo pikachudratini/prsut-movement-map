@@ -1,0 +1,30 @@
+{
+  "cases": [
+    {
+      "id": "SMK-001",
+      "ok": true,
+      "detail": "load markers"
+    },
+    {
+      "id": "SMK-002",
+      "ok": true,
+      "detail": "compact actions"
+    },
+    {
+      "id": "SMK-003",
+      "ok": true,
+      "detail": "demo + analyze"
+    },
+    {
+      "id": "SMK-004",
+      "ok": true,
+      "detail": "banned=[]"
+    },
+    {
+      "id": "SMK-005",
+      "ok": true,
+      "detail": "step1 continue"
+    }
+  ],
+  "failed": 0
+}

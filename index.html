@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-build="20260823-1340">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <meta name="supported-color-schemes" content="light" />
+  <meta name="theme-color" content="#f6f1e8" />
+  <meta name="darkreader-lock" />
+  <meta name="description" content="PRSUT Movement Map. Five moves. A first-day plan that fits your body. Not a score." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="./manifest.json?v=20260823-1340" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-v1.png" />
+  <link rel="icon" href="./icons/icon-192-v1.png" />
+  <title>PRSUT Movement Map</title>
+  <link rel="stylesheet" href="./css/app.css?v=20260823-1340" />
+</head>
+<body>
+  <header>
+    <div class="tag">PRSUT Fitness · 168th</div>
+    <h1>Movement Map</h1>
+    <p class="fine">Training for life, not the Games. Camera stays on this phone.</p>
+    <div class="dots" id="dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span></div>
+  </header>
+  <main>
+    <section id="welcome" class="card">
+      <p>Five short moves. We look at how you are built. Then we write how your first hour will be scaled.</p>
+      <p>No leaderboard. No medical exam. A coach-ready page you can print.</p>
+      <div class="actions">
+        <button class="btn" id="goDetails" type="button">Continue</button>
+      </div>
+    </section>
+
+    <section id="details" class="card is-hidden" hidden>
+      <label for="name">Name</label>
+      <input id="name" autocomplete="name" />
+      <label for="phone">Phone</label>
+      <input id="phone" type="tel" autocomplete="tel" inputmode="tel" />
+      <p class="hint">We use this to hold your free intro.</p>
+      <label for="email">Email <span class="fine">(optional)</span></label>
+      <input id="email" type="email" autocomplete="email" />
+      <p class="hint">Email helps if you have Wi-Fi but a weak phone signal.</p>
+      <label for="prefHour">Hour that could actually happen</label>
+      <select id="prefHour">
+        <option value="5am">5:00 a.m.</option>
+        <option value="9am">9:00 a.m.</option>
+        <option value="430">4:30 p.m.</option>
+        <option value="530" selected>5:30 p.m.</option>
+        <option value="sat">Saturday</option>
+      </select>
+      <div class="consent">
+        <input id="consent" type="checkbox" />
+        <label for="consent">Use my camera on this phone only. Do not upload video.</label>
+      </div>
+      <div class="actions">
+        <button class="btn" id="goCamera" type="button">Continue</button>
+        <button class="btn secondary" id="useDemo" type="button">Demo walkthrough</button>
+      </div>
+    </section>
+
+    <section id="camera" class="card stage-card is-hidden" hidden>
+      <h2 id="moveTitle">Stand tall</h2>
+      <p class="cue" id="liveCue">Face the camera.</p>
+      <p class="fine" id="camStatus"></p>
+      <p class="fine" id="moveCount"></p>
+      <div class="stage">
+        <video id="cam" playsinline muted autoplay></video>
+        <canvas id="overlay"></canvas>
+      </div>
+      <div class="holdbar"><i id="holdFill"></i></div>
+      <div class="actions">
+        <button class="btn" id="captureBtn" type="button">Capture this move</button>
+        <button class="btn secondary" id="skipMove" type="button">Use a stand-in</button>
+      </div>
+    </section>
+
+    <section id="report" class="card is-hidden" hidden>
+      <p class="fine" id="savedNote"></p>
+      <h2 id="reportTitle">Here is how we will train you</h2>
+      <p id="hourLine"></p>
+      <div id="notes"></div>
+      <h2>How we scale day one</h2>
+      <div id="scales"></div>
+      <h2>How you are built</h2>
+      <p class="fine">Ratios from this camera. Useful for stance and setup. Not a body-fat number.</p>
+      <div id="ratios"></div>
+      <div class="thumbs" id="thumbs"></div>
+      <p class="fine" id="disclaimer"></p>
+      <p id="coachSign"></p>
+      <p class="fine">Hello, <span id="hello">friend</span>.</p>
+      <div class="actions no-print">
+        <button class="btn" id="bookBtn" type="button">Book a free intro</button>
+        <button class="btn secondary" id="printBtn" type="button">Print this map</button>
+        <button class="btn secondary" id="mapBtn" type="button">First Day Map</button>
+      </div>
+    </section>
+  </main>
+  <footer class="fine">PRSUT · Gretna / west Omaha · <span id="buildStamp"></span></footer>
+  <button class="fab-back is-hidden" id="fabBack" type="button" hidden>Back</button>
+  <div id="installBanner">
+    <p>Add Movement Map to your phone.</p>
+    <div class="actions">
+      <button class="btn" id="installHow" type="button">How</button>
+      <button class="btn secondary" id="installLater" type="button">Not now</button>
+    </div>
+  </div>
+  <div id="toast" hidden></div>
+  <script type="module" src="./js/app.js?v=20260823-1340"></script>
+</body>
+</html>
