@@ -1,0 +1,80 @@
+{
+  "app_root": "/root/plaza-projects/prsut-movement-map",
+  "started_at": "2026-08-23T13:59:15.076845+00:00",
+  "counts": {
+    "pass": 7,
+    "fail": 0,
+    "blocked": 0,
+    "needs_agent": 0,
+    "skip": 0
+  },
+  "results": [
+    {
+      "id": "SMK-001",
+      "title": "App loads",
+      "status": "pass",
+      "url": "https://pikachudratini.github.io/prsut-movement-map/",
+      "http_status": 200,
+      "required": true,
+      "kind": "api",
+      "automate": "curl",
+      "body_sample": "<!DOCTYPE html>\n<html lang=\"en\" data-build=\"20260823-1412\">\n<head>\n  <meta charset=\"utf-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\" />\n  <meta name=\"color-scheme\" content=\"light\" />\n  <meta name=\"supported-color-schemes\" content=\"light\" />\n  <meta "
+    },
+    {
+      "id": "SMK-002",
+      "title": "Compact controls",
+      "status": "pass",
+      "required": true,
+      "kind": "api",
+      "automate": "script",
+      "exit_code": 0
+    },
+    {
+      "id": "SMK-003",
+      "title": "Demo analyze path",
+      "status": "pass",
+      "required": true,
+      "kind": "api",
+      "automate": "script",
+      "exit_code": 0
+    },
+    {
+      "id": "SMK-004",
+      "title": "No leftover mentor names",
+      "status": "pass",
+      "required": true,
+      "kind": "api",
+      "automate": "script",
+      "exit_code": 0
+    },
+    {
+      "id": "SMK-005",
+      "title": "Step one Continue only",
+      "status": "pass",
+      "required": true,
+      "kind": "api",
+      "automate": "script",
+      "exit_code": 0
+    },
+    {
+      "id": "SMK-006",
+      "title": "Camera CPU fallback",
+      "status": "pass",
+      "required": true,
+      "kind": "api",
+      "automate": "script",
+      "exit_code": 0
+    },
+    {
+      "id": "SMK-007",
+      "title": "Live build stamp",
+      "status": "pass",
+      "url": "https://pikachudratini.github.io/prsut-movement-map/",
+      "http_status": 200,
+      "required": true,
+      "kind": "api",
+      "automate": "curl",
+      "body_sample": "<!DOCTYPE html>\n<html lang=\"en\" data-build=\"20260823-1412\">\n<head>\n  <meta charset=\"utf-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\" />\n  <meta name=\"color-scheme\" content=\"light\" />\n  <meta name=\"supported-color-schemes\" content=\"light\" />\n  <meta "
+    }
+  ]
+}

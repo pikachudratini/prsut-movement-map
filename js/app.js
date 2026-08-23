@@ -193,8 +193,8 @@ function loop() {
 }
 
 function drawPose(ctx, pose, w, h) {
-  ctx.strokeStyle = "rgba(31,111,106,0.9)";
-  ctx.fillStyle = "rgba(31,111,106,0.95)";
+  ctx.strokeStyle = "rgba(216,181,137,0.95)";
+  ctx.fillStyle = "rgba(216,181,137,0.98)";
   ctx.lineWidth = 3;
   const line = (a, b) => {
     if (!vis(pose[a]) || !vis(pose[b])) return;
@@ -335,7 +335,7 @@ function placeholder(label) {
   c.width = 120; c.height = 160;
   const x = c.getContext("2d");
   x.fillStyle = "#ece6dc"; x.fillRect(0,0,120,160);
-  x.fillStyle = "#1f6f6a"; x.font = "12px Georgia"; x.fillText(label.slice(0,10), 8, 80);
+  x.fillStyle = "#d8b589"; x.font = "12px Outfit, Arial"; x.fillText(label.slice(0,10), 8, 80);
   return c.toDataURL();
 }
 
